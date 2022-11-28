@@ -62,7 +62,7 @@ dependencies {
     compile group: 'joda-time', name: 'joda-time', version: '2.10.3'
     compile group: 'commons-io', name: 'commons-io', version: '2.6'
     compile group: 'org.freemarker', name: 'freemarker', version: '2.3.29'
-    compile group: 'software.amazon.awssdk', name: 'ec2', version: '2.10.30'
+    compile group: 'software.amazon.awssdk', name: 'ec2', version: '2.18.24'
 
     testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.3.2'
     testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.3.2'
