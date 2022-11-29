@@ -35,6 +35,7 @@ import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 
 import static com.continuumsecurity.elasticagent.ec2.Ec2Plugin.LOG;
+import static java.util.Arrays.asList;
 
 public class Ec2AgentInstances implements AgentInstances<Ec2Instance> {
 
@@ -49,6 +50,17 @@ public class Ec2AgentInstances implements AgentInstances<Ec2Instance> {
 
         LOG.info(String.format("[Create Agent] Processing create agent request for %s", request.jobIdentifier()));
         ClusterProfileProperties settings = request.getClusterProfileProperties();
+        Ec2Instance ec2AgentForJob = find(request.jobIdentifier());
+        if (ec2AgentForJob != null) {
+            AgentStatusReport agentStatusReport = getAgentStatusReport(request.getClusterProfileProperties(), ec2AgentForJob);
+            if (asList("pending", "running").contains(agentStatusReport.getState())) {
+                String agentAlreadyAssignedMsg = String.format("Agent creation not done as an ec2-agent with id %s was already created for the job %s.",
+                        ec2AgentForJob.id(), request.jobIdentifier());
+                consoleLogAppender.accept(agentAlreadyAssignedMsg);
+                LOG.warn(agentAlreadyAssignedMsg);
+                return ec2AgentForJob;
+            }
+        }
 
         final Integer maxAllowedAgents = settings.getMaxElasticAgents();
         synchronized (instances) {
