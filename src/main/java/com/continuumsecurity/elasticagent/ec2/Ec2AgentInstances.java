@@ -54,7 +54,7 @@ public class Ec2AgentInstances implements AgentInstances<Ec2Instance> {
         if (ec2AgentForJob != null) {
             AgentStatusReport agentStatusReport = getAgentStatusReport(request.getClusterProfileProperties(), ec2AgentForJob);
             if (asList("pending", "running").contains(agentStatusReport.getState())) {
-                String agentAlreadyAssignedMsg = String.format("Agent creation not done as an ec2-agent with id %s was already created for the job %s.",
+                String agentAlreadyAssignedMsg = String.format("Agent not created as an ec2-agent with id %s was already launched for the job %s.",
                         ec2AgentForJob.id(), request.jobIdentifier());
                 consoleLogAppender.accept(agentAlreadyAssignedMsg);
                 LOG.warn(agentAlreadyAssignedMsg);
