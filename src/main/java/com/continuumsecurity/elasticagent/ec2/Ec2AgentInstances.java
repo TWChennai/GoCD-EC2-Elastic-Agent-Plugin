@@ -50,16 +50,13 @@ public class Ec2AgentInstances implements AgentInstances<Ec2Instance> {
 
         LOG.info(String.format("[Create Agent] Processing create agent request for %s", request.jobIdentifier()));
         ClusterProfileProperties settings = request.getClusterProfileProperties();
-        Ec2Instance ec2AgentForJob = find(request.jobIdentifier());
+        Ec2Instance ec2AgentForJob = agentAssignedFor(request.jobIdentifier(), request.getClusterProfileProperties());
         if (ec2AgentForJob != null) {
-            AgentStatusReport agentStatusReport = getAgentStatusReport(request.getClusterProfileProperties(), ec2AgentForJob);
-            if (asList("pending", "running").contains(agentStatusReport.getState())) {
-                String agentAlreadyAssignedMsg = String.format("Agent not created as an ec2-agent with id %s was already launched for the job %s.",
-                        ec2AgentForJob.id(), request.jobIdentifier());
-                consoleLogAppender.accept(agentAlreadyAssignedMsg);
-                LOG.warn(agentAlreadyAssignedMsg);
-                return ec2AgentForJob;
-            }
+            String agentAlreadyAssignedMsg = String.format("Agent not created as an ec2-agent with id %s was already launched for the job %s.",
+                    ec2AgentForJob.id(), request.jobIdentifier());
+            consoleLogAppender.accept(agentAlreadyAssignedMsg);
+            LOG.warn(agentAlreadyAssignedMsg);
+            return ec2AgentForJob;
         }
 
         final Integer maxAllowedAgents = settings.getMaxElasticAgents();
@@ -267,6 +264,15 @@ public class Ec2AgentInstances implements AgentInstances<Ec2Instance> {
         LOG.info("Status report " + instanceStatusReportList.size() + " instances");
 
         return new StatusReport(instanceStatusReportList.size(), instanceStatusReportList);
+    }
+
+    private Ec2Instance agentAssignedFor(JobIdentifier jobIdentifier, ClusterProfileProperties clusterProfileProperties) {
+        Ec2Instance ec2AgentForJob = find(jobIdentifier);
+        if (ec2AgentForJob != null) {
+            AgentStatusReport agentStatusReport = getAgentStatusReport(clusterProfileProperties, ec2AgentForJob);
+            return asList("pending", "running").contains(agentStatusReport.getState()) ? ec2AgentForJob : null;
+        }
+        return null;
     }
 
     private String extractPipelineNameFromTags(List<Tag> tags) {
