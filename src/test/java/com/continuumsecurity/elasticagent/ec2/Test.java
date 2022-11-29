@@ -45,9 +45,9 @@ public class Test {
         settings.setGoServerUrl(Properties.SERVER_URL);
         settings.setAutoRegisterTimeout(Properties.AUTO_REGISTER_TIMEOUT);
         settings.setMaxElasticAgents(Properties.MAX_ELASTIC_AGENTS);
-        settings.setAwsAccessKeyId(Properties.ACCESS_KEY_ID);
-        settings.setAwsSecretAccessKey(Properties.SECRET_ACCESS_KEY);
-        settings.setAwsRegion(Properties.REGION);
+        settings.setAwsAccessKeyId(System.getenv("AWS_ACCESS_KEY"));
+        settings.setAwsSecretAccessKey(System.getenv("AWS_SECRET_ACCESS_KEY"));
+        settings.setAwsRegion(System.getenv("AWS_REGION"));
 
         CreateAgentRequest createAgentRequest = new CreateAgentRequest(
                 Properties.AUTO_REGISTER_KEY,
@@ -71,7 +71,7 @@ public class Test {
 
 
 
-        AwsBasicCredentials awsCredentials = AwsBasicCredentials.create(Properties.ACCESS_KEY_ID, Properties.SECRET_ACCESS_KEY);
+        AwsBasicCredentials awsCredentials = AwsBasicCredentials.create(System.getenv("AWS_ACCESS_KEY"), System.getenv("AWS_SECRET_ACCESS_KEY"));
         Ec2Client ec2 = Ec2Client.builder()
                 .region(Region.EU_WEST_1)
                 .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))

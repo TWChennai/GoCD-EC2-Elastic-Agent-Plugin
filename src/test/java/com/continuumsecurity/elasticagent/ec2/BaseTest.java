@@ -31,9 +31,9 @@ public abstract class BaseTest {
         settings.setGoServerUrl(Properties.SERVER_URL);
         settings.setAutoRegisterTimeout(Properties.AUTO_REGISTER_TIMEOUT);
         settings.setMaxElasticAgents(Properties.MAX_ELASTIC_AGENTS);
-        settings.setAwsAccessKeyId(Properties.ACCESS_KEY_ID);
-        settings.setAwsSecretAccessKey(Properties.SECRET_ACCESS_KEY);
-        settings.setAwsRegion(Properties.REGION);
+        settings.setAwsAccessKeyId(System.getenv("AWS_ACCESS_KEY"));
+        settings.setAwsSecretAccessKey(System.getenv("AWS_SECRET_ACCESS_KEY"));
+        settings.setAwsRegion(System.getenv("AWS_REGION"));
 
         return settings;
     }

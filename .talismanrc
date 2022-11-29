@@ -1,0 +1,4 @@
+fileignoreconfig:
+- filename: src/test/java/com/continuumsecurity/elasticagent/ec2/executors/GetProfileMetadataExecutorTest.java
+  checksum: e925a95d0859734636c651c53dea01e972ee6d2b6e2ba42332cfaeb7f4b17243
+version: "1.0"
