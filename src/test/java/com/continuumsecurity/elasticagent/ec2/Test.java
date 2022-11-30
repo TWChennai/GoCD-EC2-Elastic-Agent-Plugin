@@ -51,6 +51,7 @@ public class Test {
 
         CreateAgentRequest createAgentRequest = new CreateAgentRequest(
                 Properties.AUTO_REGISTER_KEY,
+                "dev",
                 properties,
                 jobIdentifier,
                 settings

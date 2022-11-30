@@ -50,7 +50,7 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
         ClusterProfileProperties clusterProfiles = createClusterProfiles();
 
         instance = agentInstances.create(
-                new CreateAgentRequest(UUID.randomUUID().toString(), properties, jobIdentifier, clusterProfiles),
+                new CreateAgentRequest(UUID.randomUUID().toString(), "dev", properties, jobIdentifier, clusterProfiles),
                 mock(PluginRequest.class),
                 mock(ConsoleLogAppender.class));
 

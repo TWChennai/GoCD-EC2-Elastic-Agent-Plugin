@@ -82,6 +82,9 @@ public class Ec2Instance {
                 "chown -R go:go /var/log/go-agent/\n" +
                 "chown -R go:go /var/lib/go-agent/\n" +
                 "chown -R go:go /usr/share/go-agent/\n";
+        if (request.environment() != null) {
+            userdata += "echo \"agent.auto.register.environments=" + request.environment() + "\" >> /var/lib/go-agent/config/autoregister.properties\n";
+        }
 
         if (request.properties().get("ec2_user_data") != null) {
             userdata += request.properties().get("ec2_user_data") + "\n";

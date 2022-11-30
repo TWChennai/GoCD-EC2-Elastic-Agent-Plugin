@@ -33,6 +33,7 @@ import static com.continuumsecurity.elasticagent.ec2.Ec2Plugin.GSON;
 public class CreateAgentRequest {
 
     private String autoRegisterKey;
+    private String environment;
     private JobIdentifier jobIdentifier;
     private Map<String, String> elasticAgentProfileProperties;
     private ClusterProfileProperties clusterProfileProperties;
@@ -41,20 +42,21 @@ public class CreateAgentRequest {
     }
 
     public CreateAgentRequest(String autoRegisterKey,
+                              String environment,
                               Map<String, String> elasticAgentProfileProperties,
                               JobIdentifier jobIdentifier,
                               Map<String, String> clusterProfileProperties) {
-        this.autoRegisterKey = autoRegisterKey;
-        this.elasticAgentProfileProperties = elasticAgentProfileProperties;
-        this.jobIdentifier = jobIdentifier;
-        this.clusterProfileProperties = ClusterProfileProperties.fromConfiguration(clusterProfileProperties);
+        this(autoRegisterKey, environment, elasticAgentProfileProperties, jobIdentifier,
+                ClusterProfileProperties.fromConfiguration(clusterProfileProperties));
     }
 
     public CreateAgentRequest(String autoRegisterKey,
+                              String environment,
                               Map<String, String> elasticAgentProfileProperties,
                               JobIdentifier jobIdentifier,
                               ClusterProfileProperties clusterProfileProperties) {
         this.autoRegisterKey = autoRegisterKey;
+        this.environment = environment;
         this.elasticAgentProfileProperties = elasticAgentProfileProperties;
         this.jobIdentifier = jobIdentifier;
         this.clusterProfileProperties = clusterProfileProperties;
@@ -62,6 +64,10 @@ public class CreateAgentRequest {
 
     public String autoRegisterKey() {
         return autoRegisterKey;
+    }
+
+    public String environment() {
+        return environment;
     }
 
     public JobIdentifier jobIdentifier() {
