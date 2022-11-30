@@ -58,6 +58,10 @@ public class PluginSettings {
     @SerializedName("aws_region")
     private String awsRegion;
 
+    @Expose
+    @SerializedName("aws_profile")
+    private String awsProfile;
+
     private Period autoRegisterPeriod;
 
     public static PluginSettings fromJSON(String json) {
@@ -77,6 +81,7 @@ public class PluginSettings {
         if (awsAccessKeyId != null ? !awsAccessKeyId.equals(that.awsAccessKeyId) : that.awsAccessKeyId != null) return false;
         if (awsSecretAccessKey != null ? !awsSecretAccessKey.equals(that.awsSecretAccessKey) : that.awsSecretAccessKey != null) return false;
         if (awsRegion != null ? !awsRegion.equals(that.awsRegion) : that.awsRegion != null) return false;
+        if (awsProfile != null ? !awsProfile.equals(that.awsProfile) : that.awsProfile != null) return false;
         return autoRegisterPeriod != null ? autoRegisterPeriod.equals(that.autoRegisterPeriod) : that.autoRegisterPeriod == null;
     }
 
@@ -88,6 +93,7 @@ public class PluginSettings {
         result = 31 * result + (awsAccessKeyId != null ? awsAccessKeyId.hashCode() : 0);
         result = 31 * result + (awsSecretAccessKey != null ? awsSecretAccessKey.hashCode() : 0);
         result = 31 * result + (awsRegion != null ? awsRegion.hashCode() : 0);
+        result = 31 * result + (awsProfile != null ? awsProfile.hashCode() : 0);
         return result;
     }
 
@@ -101,9 +107,10 @@ public class PluginSettings {
         if (awsAccessKeyId != null && !awsAccessKeyId.isEmpty()) pluginSettingsString += ", awsAccessKeyId='" + awsAccessKeyId + '\'';
         if (awsSecretAccessKey != null && !awsSecretAccessKey.isEmpty()) pluginSettingsString += ", awsSecretAccessKey='" + awsSecretAccessKey + '\'';
         pluginSettingsString += ", awsRegion='" + awsRegion + '\'' +
+                ", awsProfile=" + awsProfile +
                 ", autoRegisterPeriod=" + autoRegisterPeriod +
                 '}';
-        
+
         return pluginSettingsString;
     }
 
@@ -153,6 +160,10 @@ public class PluginSettings {
         }
 
         return newRegion;
+    }
+
+    public String getAwsProfile() {
+        return awsProfile;
     }
 
     public void setGoServerUrl(String goServerUrl) {

@@ -64,14 +64,14 @@ public class Ec2Instance {
         return jobIdentifier;
     }
 
-    public static Ec2Instance create(CreateAgentRequest request, PluginSettings settings, ConsoleLogAppender consoleLogAppender) {
+    public static Ec2Instance create(CreateAgentRequest request, ClusterProfileProperties clusterProfileProperties, ConsoleLogAppender consoleLogAppender) {
 
         LOG.debug("Creating new instance for " + request.jobIdentifier().getRepresentation());
 
-        Ec2Client ec2 = createEc2Client(settings.getAwsAccessKeyId(), settings.getAwsSecretAccessKey(), settings.getAwsRegion());
+        Ec2Client ec2 = createEc2Client(clusterProfileProperties);
 
         String userdata = "#!/bin/bash\n" +
-                "sed -ri \"s,http[s]?://localhost:[0-9]+/go," + settings.getGoServerUrl() + ",g\" /usr/share/go-agent/wrapper-config/wrapper-properties.conf\n" +
+                "sed -ri \"s,http[s]?://localhost:[0-9]+/go," + clusterProfileProperties.getGoServerUrl() + ",g\" /usr/share/go-agent/wrapper-config/wrapper-properties.conf\n" +
                 "echo \"wrapper.app.parameter.102=-sslVerificationMode\" >> /usr/share/go-agent/wrapper-config/wrapper-properties.conf\n" +
                 "echo \"wrapper.app.parameter.103=NONE\" >> /usr/share/go-agent/wrapper-config/wrapper-properties.conf\n" +
                 "mkdir -p /var/lib/go-agent/config\n" +
@@ -206,10 +206,7 @@ public class Ec2Instance {
 
         LOG.debug("Terminating instance " + this.id());
 
-        Ec2Client ec2 = createEc2Client(
-                clusterProfileProperties.getAwsAccessKeyId(),
-                clusterProfileProperties.getAwsSecretAccessKey(),
-                clusterProfileProperties.getAwsRegion());
+        Ec2Client ec2 = createEc2Client(clusterProfileProperties);
 
         TerminateInstancesRequest request = TerminateInstancesRequest.builder()
                 .instanceIds(this.id).build();
@@ -229,20 +226,27 @@ public class Ec2Instance {
     private static boolean isNotNullOrBlank(String testString) {
     	return testString != null && !testString.isEmpty();
     }
-    
-    private static AwsCredentialsProvider getCredentialsProvider(String awsAccessKeyId, String awsSecretAccessKey) {
-        if (isNotNullOrBlank(awsAccessKeyId) && isNotNullOrBlank(awsSecretAccessKey)) {
-            AwsBasicCredentials awsCredentials = AwsBasicCredentials.create(awsAccessKeyId,awsSecretAccessKey);
+
+    private static AwsCredentialsProvider getCredentialsProvider(ClusterProfileProperties clusterProfileProperties) {
+        if (isNotNullOrBlank(clusterProfileProperties.getAwsAccessKeyId()) &&
+                isNotNullOrBlank(clusterProfileProperties.getAwsSecretAccessKey())) {
+            AwsBasicCredentials awsCredentials = AwsBasicCredentials.create(clusterProfileProperties.getAwsAccessKeyId(),
+                    clusterProfileProperties.getAwsSecretAccessKey());
             return StaticCredentialsProvider.create(awsCredentials);
         }
         else {
-            return DefaultCredentialsProvider.create();
+            DefaultCredentialsProvider.Builder builder = DefaultCredentialsProvider.builder();
+            if (isNotNullOrBlank(clusterProfileProperties.getAwsProfile())) {
+                builder.profileName(clusterProfileProperties.getAwsProfile());
+            }
+            return builder.build();
         }
     }
-    protected static Ec2Client createEc2Client(String awsAccessKeyId, String awsSecretAccessKey, Region region) {
+
+    protected static Ec2Client createEc2Client(ClusterProfileProperties clusterProfileProperties) {
         return Ec2Client.builder()
-                .region(region)
-                .credentialsProvider(getCredentialsProvider(awsAccessKeyId,awsSecretAccessKey))
+                .region(clusterProfileProperties.getAwsRegion())
+                .credentialsProvider(getCredentialsProvider(clusterProfileProperties))
                 .build();
     }
 

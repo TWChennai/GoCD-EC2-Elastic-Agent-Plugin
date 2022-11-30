@@ -49,7 +49,7 @@ public class Ec2AgentInstances implements AgentInstances<Ec2Instance> {
     public Ec2Instance create(CreateAgentRequest request, PluginRequest pluginRequest, ConsoleLogAppender consoleLogAppender) {
 
         LOG.info(String.format("[Create Agent] Processing create agent request for %s", request.jobIdentifier()));
-        ClusterProfileProperties settings = request.getClusterProfileProperties();
+        ClusterProfileProperties clusterProfileProperties = request.getClusterProfileProperties();
         Ec2Instance ec2AgentForJob = agentAssignedFor(request.jobIdentifier(), request.getClusterProfileProperties());
         if (ec2AgentForJob != null) {
             String agentAlreadyAssignedMsg = String.format("Agent not created as an ec2-agent with id %s was already launched for the job %s.",
@@ -59,7 +59,7 @@ public class Ec2AgentInstances implements AgentInstances<Ec2Instance> {
             return ec2AgentForJob;
         }
 
-        final Integer maxAllowedAgents = settings.getMaxElasticAgents();
+        final Integer maxAllowedAgents = clusterProfileProperties.getMaxElasticAgents();
         synchronized (instances) {
             if (!jobsWaitingForAgentCreation.contains(request.jobIdentifier())) {
                 jobsWaitingForAgentCreation.add(request.jobIdentifier());
@@ -68,7 +68,7 @@ public class Ec2AgentInstances implements AgentInstances<Ec2Instance> {
             List<Map<String, String>> messages = new ArrayList<>();
             if (semaphore.tryAcquire()) {
                 pluginRequest.addServerHealthMessage(messages);
-                Ec2Instance instance = Ec2Instance.create(request, settings, consoleLogAppender);
+                Ec2Instance instance = Ec2Instance.create(request, clusterProfileProperties, consoleLogAppender);
                 register(instance);
                 jobsWaitingForAgentCreation.remove(request.jobIdentifier());
                 return instance;
@@ -166,11 +166,7 @@ public class Ec2AgentInstances implements AgentInstances<Ec2Instance> {
     public void refreshAll(ClusterProfileProperties clusterProfileProperties) throws Exception {
         if (!refreshed) {
     
-            Ec2Client ec2 = Ec2Instance.createEc2Client(
-                               clusterProfileProperties.getAwsAccessKeyId(),
-                               clusterProfileProperties.getAwsSecretAccessKey(),
-                               clusterProfileProperties.getAwsRegion()
-                            );
+            Ec2Client ec2 = Ec2Instance.createEc2Client(clusterProfileProperties);
 
             DescribeInstancesResponse response = ec2.describeInstances(
                     DescribeInstancesRequest.builder()
@@ -224,11 +220,7 @@ public class Ec2AgentInstances implements AgentInstances<Ec2Instance> {
 
     @Override
     public StatusReport getStatusReport(ClusterProfileProperties clusterProfileProperties) throws Exception {
-            Ec2Client ec2 = Ec2Instance.createEc2Client(
-                               clusterProfileProperties.getAwsAccessKeyId(),
-                               clusterProfileProperties.getAwsSecretAccessKey(),
-                               clusterProfileProperties.getAwsRegion()
-                            );
+            Ec2Client ec2 = Ec2Instance.createEc2Client(clusterProfileProperties);
 
         DescribeInstancesResponse response = ec2.describeInstances(
                 DescribeInstancesRequest.builder()
@@ -286,12 +278,7 @@ public class Ec2AgentInstances implements AgentInstances<Ec2Instance> {
 
     @Override
     public AgentStatusReport getAgentStatusReport(ClusterProfileProperties clusterProfileProperties, Ec2Instance agentInstance) {
-            Ec2Client ec2 = Ec2Instance.createEc2Client(
-                               clusterProfileProperties.getAwsAccessKeyId(),
-                               clusterProfileProperties.getAwsSecretAccessKey(),
-                               clusterProfileProperties.getAwsRegion()
-                            );
-
+            Ec2Client ec2 = Ec2Instance.createEc2Client(clusterProfileProperties);
 
         DescribeInstancesResponse response = ec2.describeInstances(
                 DescribeInstancesRequest.builder()

@@ -35,6 +35,7 @@ public class GetClusterProfileMetadataExecutor implements RequestExecutor {
     public static final Metadata AWS_ACCESS_KEY_ID = new Metadata("aws_access_key_id", false, false);
     public static final Metadata AWS_SECRET_ACCESS_KEY = new Metadata("aws_secret_access_key", false, true);
     public static final Metadata AWS_REGION = new Metadata("aws_region", true, false);
+    public static final Metadata AWS_PROFILE = new Metadata("aws_profile", false, false);
 
     public static final List<Metadata> CLUSTER_PROFILE_FIELDS = new ArrayList<>();
 
@@ -45,6 +46,7 @@ public class GetClusterProfileMetadataExecutor implements RequestExecutor {
         CLUSTER_PROFILE_FIELDS.add(AWS_ACCESS_KEY_ID);
         CLUSTER_PROFILE_FIELDS.add(AWS_SECRET_ACCESS_KEY);
         CLUSTER_PROFILE_FIELDS.add(AWS_REGION);
+        CLUSTER_PROFILE_FIELDS.add(AWS_PROFILE);
     }
 
     @Override

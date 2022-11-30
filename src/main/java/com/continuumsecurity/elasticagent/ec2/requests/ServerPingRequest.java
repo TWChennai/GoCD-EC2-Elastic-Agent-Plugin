@@ -27,7 +27,6 @@ import com.continuumsecurity.elasticagent.ec2.executors.ServerPingRequestExecuto
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static com.continuumsecurity.elasticagent.ec2.Ec2Plugin.GSON;
 
@@ -36,12 +35,6 @@ public class ServerPingRequest {
     private List<ClusterProfileProperties> allClusterProfileProperties;
 
     public ServerPingRequest() {
-    }
-
-    public ServerPingRequest(List<Map<String, String>> allClusterProfileProperties) {
-        this.allClusterProfileProperties = allClusterProfileProperties.stream()
-                .map(ClusterProfileProperties::fromConfiguration)
-                .collect(Collectors.toList());
     }
 
     public static ServerPingRequest fromJSON(String json) {

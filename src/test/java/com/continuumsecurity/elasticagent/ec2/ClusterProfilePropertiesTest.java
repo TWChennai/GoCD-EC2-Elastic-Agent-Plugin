@@ -30,14 +30,15 @@ import static org.hamcrest.core.Is.is;
 
 public class ClusterProfilePropertiesTest {
     @Test
-    public void shouldDeserializeFromJSON() throws Exception {
+    public void shouldDeserializeFromJSON() {
         ClusterProfileProperties pluginSettings = ClusterProfileProperties.fromJSON("{" +
                 "\"go_server_url\": \"https://cloud.example.com:8154/go\", " +
                 "\"auto_register_timeout\": \"5\", " +
                 "\"max_elastic_agents\": \"50\", " +
                 "\"aws_access_key_id\": \"ACCES_KEY_ID\", " +
                 "\"aws_secret_access_key\": \"SECRET_ACCESS_KEY\", " +
-                "\"aws_region\": \"eu-west-1\"" +
+                "\"aws_region\": \"eu-west-1\"," +
+                "\"aws_profile\": \"developer\"" +
                 "}");
 
         assertThat(pluginSettings.getGoServerUrl(), is("https://cloud.example.com:8154/go"));
@@ -45,6 +46,7 @@ public class ClusterProfilePropertiesTest {
         assertThat(pluginSettings.getMaxElasticAgents(), is(50));
         assertThat(pluginSettings.getAwsAccessKeyId(), is("ACCES_KEY_ID"));
         assertThat(pluginSettings.getAwsSecretAccessKey(), is("SECRET_ACCESS_KEY"));
+        assertThat(pluginSettings.getAwsProfile(), is("developer"));
     }
 
     @Test

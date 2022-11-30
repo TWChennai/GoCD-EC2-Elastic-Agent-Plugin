@@ -77,5 +77,11 @@ Ensure that the keys you use are also declared in the GetPluginConfigurationExec
             <input type="text" ng-model="aws_region" ng-required="true" maxlength="20"/>
             <span class="form_error" ng-show="GOINPUTNAME[aws_region].$error.server">{{GOINPUTNAME[aws_region].$error.server}}</span>
         </div>
+
+        <div class="form_item_block">
+            <label>Profile:</label>
+            <input type="text" ng-model="aws_profile" ng-required="false"/>
+            <span class="form_error" ng-show="GOINPUTNAME[aws_profile].$error.server">{{GOINPUTNAME[aws_profile].$error.server}}</span>
+        </div>
     </fieldset>
 </div>

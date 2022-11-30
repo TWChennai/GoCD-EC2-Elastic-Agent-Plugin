@@ -18,17 +18,17 @@
 
 package com.continuumsecurity.elasticagent.ec2.requests;
 
+import com.continuumsecurity.elasticagent.ec2.ClusterProfileProperties;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 public class ServerPingRequestTest {
     @Test
-    public void shouldDeserializeJSONBody() {
+    public void shouldDeserializeFromJSON() {
         String requestBody = "{\n " +
                 " \"all_cluster_profile_properties\": [\n    " +
                 "{\n      " +
@@ -37,18 +37,24 @@ public class ServerPingRequestTest {
                 "      \"max_elastic_agents\": \"30\",\n" +
                 "      \"aws_access_key_id\": \"123456\",\n" +
                 "      \"aws_secret_access_key\": \"7890\",\n" +
-                "      \"aws_region\": \"eu-west-1\"\n" +
+                "      \"aws_region\": \"eu-west-1\",\n" +
+                "      \"aws_profile\": \"some-profile\"\n" +
                 "    }\n" +
                 "   ]" +
                 "\n}";
 
-        HashMap<String, String> configurations = new HashMap<>();
-        configurations.put("go_server_url", "foo");
-        configurations.put("auto_register_timeout", "10");
-        configurations.put("max_elastic_agents", "30");
-        configurations.put("aws_access_key_id", "123456");
-        configurations.put("aws_secret_access_key", "7890");
-        configurations.put("aws_region", "eu-west-1");
-        assertThat(ServerPingRequest.fromJSON(requestBody), is(new ServerPingRequest(Arrays.asList(configurations))));
+        ServerPingRequest serverPingRequest = ServerPingRequest.fromJSON(requestBody);
+
+        List<ClusterProfileProperties> allClusterProfileProperties = serverPingRequest.allClusterProfileProperties();
+        assertThat(allClusterProfileProperties.size(), is(1));
+
+        ClusterProfileProperties clusterProfileProperties = allClusterProfileProperties.get(0);
+        assertThat(clusterProfileProperties.getGoServerUrl(), is("foo"));
+        assertThat(clusterProfileProperties.getAutoRegisterTimeout(), is("10"));
+        assertThat(clusterProfileProperties.getMaxElasticAgents(), is(30));
+        assertThat(clusterProfileProperties.getAwsAccessKeyId(), is("123456"));
+        assertThat(clusterProfileProperties.getAwsSecretAccessKey(), is("7890"));
+        assertThat(clusterProfileProperties.getAwsRegion().toString(), is("eu-west-1"));
+        assertThat(clusterProfileProperties.getAwsProfile(), is("some-profile"));
     }
 }
