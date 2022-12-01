@@ -38,7 +38,8 @@ public class ClusterProfilePropertiesTest {
                 "\"aws_access_key_id\": \"ACCES_KEY_ID\", " +
                 "\"aws_secret_access_key\": \"SECRET_ACCESS_KEY\", " +
                 "\"aws_region\": \"eu-west-1\"," +
-                "\"aws_profile\": \"developer\"" +
+                "\"aws_profile\": \"developer\"," +
+                "\"aws_endpoint_url\": \"https://vpce-someendpoint-code.region.vpce.amazonaws.com\"" +
                 "}");
 
         assertThat(pluginSettings.getGoServerUrl(), is("https://cloud.example.com:8154/go"));
@@ -47,6 +48,7 @@ public class ClusterProfilePropertiesTest {
         assertThat(pluginSettings.getAwsAccessKeyId(), is("ACCES_KEY_ID"));
         assertThat(pluginSettings.getAwsSecretAccessKey(), is("SECRET_ACCESS_KEY"));
         assertThat(pluginSettings.getAwsProfile(), is("developer"));
+        assertThat(pluginSettings.getAwsEndpointUrl(), is("https://vpce-someendpoint-code.region.vpce.amazonaws.com"));
     }
 
     @Test

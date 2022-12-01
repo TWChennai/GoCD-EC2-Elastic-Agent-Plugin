@@ -1,6 +1,8 @@
 fileignoreconfig:
+- filename: src/test/java/com/continuumsecurity/elasticagent/ec2/executors/ClusterProfileValidateRequestExecutorTest.java
+  checksum: 1ca66e99a4c1834ee132a4971066978f80a078cdefa140a0e737a2d41a6d70b1
 - filename: src/test/java/com/continuumsecurity/elasticagent/ec2/executors/GetClusterProfileMetadataExecutorTest.java
-  checksum: e53b1c1c6926c0bf4c2f6afeff75dd7a76901431ff9b436e269f7a62417f9f4a
+  checksum: 90253c1942fdca098cbb74ddcea0390430549b316ac3f6fe2b124844c1cbfab8
 - filename: src/test/java/com/continuumsecurity/elasticagent/ec2/executors/GetProfileMetadataExecutorTest.java
   checksum: e925a95d0859734636c651c53dea01e972ee6d2b6e2ba42332cfaeb7f4b17243
 version: "1.0"

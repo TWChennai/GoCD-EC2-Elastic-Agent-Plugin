@@ -38,7 +38,8 @@ public class ServerPingRequestTest {
                 "      \"aws_access_key_id\": \"123456\",\n" +
                 "      \"aws_secret_access_key\": \"7890\",\n" +
                 "      \"aws_region\": \"eu-west-1\",\n" +
-                "      \"aws_profile\": \"some-profile\"\n" +
+                "      \"aws_profile\": \"some-profile\",\n" +
+                "      \"aws_endpoint_url\": \"https://vpce-someendpoint-code.region.vpce.amazonaws.com\"\n" +
                 "    }\n" +
                 "   ]" +
                 "\n}";
@@ -56,5 +57,6 @@ public class ServerPingRequestTest {
         assertThat(clusterProfileProperties.getAwsSecretAccessKey(), is("7890"));
         assertThat(clusterProfileProperties.getAwsRegion().toString(), is("eu-west-1"));
         assertThat(clusterProfileProperties.getAwsProfile(), is("some-profile"));
+        assertThat(clusterProfileProperties.getAwsEndpointUrl(), is("https://vpce-someendpoint-code.region.vpce.amazonaws.com"));
     }
 }

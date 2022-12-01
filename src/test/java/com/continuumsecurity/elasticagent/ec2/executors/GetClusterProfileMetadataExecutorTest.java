@@ -76,6 +76,10 @@ public class GetClusterProfileMetadataExecutorTest {
                 "{" +
                 "\"key\":\"aws_profile\"," +
                 "\"metadata\":{\"required\":false,\"secure\":false}" +
+                "}," +
+                "{" +
+                "\"key\":\"aws_endpoint_url\"," +
+                "\"metadata\":{\"required\":false,\"secure\":false}" +
                 "}" +
                 "]\n";
 

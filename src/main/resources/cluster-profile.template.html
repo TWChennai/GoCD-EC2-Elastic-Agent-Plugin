@@ -83,5 +83,11 @@ Ensure that the keys you use are also declared in the GetPluginConfigurationExec
             <input type="text" ng-model="aws_profile" ng-required="false"/>
             <span class="form_error" ng-show="GOINPUTNAME[aws_profile].$error.server">{{GOINPUTNAME[aws_profile].$error.server}}</span>
         </div>
+
+        <div class="form_item_block">
+            <label>Endpoint URL:</label>
+            <input type="text" ng-model="aws_endpoint_url" ng-required="false"/>
+            <span class="form_error" ng-show="GOINPUTNAME[aws_endpoint_url].$error.server">{{GOINPUTNAME[aws_endpoint_url].$error.server}}</span>
+        </div>
     </fieldset>
 </div>

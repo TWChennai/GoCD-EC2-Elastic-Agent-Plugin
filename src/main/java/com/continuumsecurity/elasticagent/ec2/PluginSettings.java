@@ -62,6 +62,10 @@ public class PluginSettings {
     @SerializedName("aws_profile")
     private String awsProfile;
 
+    @Expose
+    @SerializedName("aws_endpoint_url")
+    private String awsEndpointUrl;
+
     private Period autoRegisterPeriod;
 
     public static PluginSettings fromJSON(String json) {
@@ -82,6 +86,7 @@ public class PluginSettings {
         if (awsSecretAccessKey != null ? !awsSecretAccessKey.equals(that.awsSecretAccessKey) : that.awsSecretAccessKey != null) return false;
         if (awsRegion != null ? !awsRegion.equals(that.awsRegion) : that.awsRegion != null) return false;
         if (awsProfile != null ? !awsProfile.equals(that.awsProfile) : that.awsProfile != null) return false;
+        if (awsEndpointUrl != null ? !awsEndpointUrl.equals(that.awsEndpointUrl) : that.awsEndpointUrl != null) return false;
         return autoRegisterPeriod != null ? autoRegisterPeriod.equals(that.autoRegisterPeriod) : that.autoRegisterPeriod == null;
     }
 
@@ -94,6 +99,7 @@ public class PluginSettings {
         result = 31 * result + (awsSecretAccessKey != null ? awsSecretAccessKey.hashCode() : 0);
         result = 31 * result + (awsRegion != null ? awsRegion.hashCode() : 0);
         result = 31 * result + (awsProfile != null ? awsProfile.hashCode() : 0);
+        result = 31 * result + (awsEndpointUrl != null ? awsEndpointUrl.hashCode() : 0);
         return result;
     }
 
@@ -108,6 +114,7 @@ public class PluginSettings {
         if (awsSecretAccessKey != null && !awsSecretAccessKey.isEmpty()) pluginSettingsString += ", awsSecretAccessKey='" + awsSecretAccessKey + '\'';
         pluginSettingsString += ", awsRegion='" + awsRegion + '\'' +
                 ", awsProfile=" + awsProfile +
+                ", awsEndpointUrl=" + awsEndpointUrl +
                 ", autoRegisterPeriod=" + autoRegisterPeriod +
                 '}';
 
@@ -164,6 +171,10 @@ public class PluginSettings {
 
     public String getAwsProfile() {
         return awsProfile;
+    }
+
+    public String getAwsEndpointUrl() {
+        return awsEndpointUrl;
     }
 
     public void setGoServerUrl(String goServerUrl) {

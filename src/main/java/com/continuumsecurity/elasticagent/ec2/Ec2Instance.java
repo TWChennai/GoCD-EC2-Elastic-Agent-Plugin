@@ -27,13 +27,18 @@ import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.core.exception.SdkClientException;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ec2.Ec2Client;
+import software.amazon.awssdk.services.ec2.Ec2ClientBuilder;
 import software.amazon.awssdk.services.ec2.model.*;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.*;
 
 import static com.continuumsecurity.elasticagent.ec2.Ec2Plugin.LOG;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class Ec2Instance {
     private final DateTime createdAt;
@@ -222,21 +227,17 @@ public class Ec2Instance {
             ec2.close();
         }
     }
-    
-    private static boolean isNotNullOrBlank(String testString) {
-    	return testString != null && !testString.isEmpty();
-    }
 
     private static AwsCredentialsProvider getCredentialsProvider(ClusterProfileProperties clusterProfileProperties) {
-        if (isNotNullOrBlank(clusterProfileProperties.getAwsAccessKeyId()) &&
-                isNotNullOrBlank(clusterProfileProperties.getAwsSecretAccessKey())) {
+        if (isNotBlank(clusterProfileProperties.getAwsAccessKeyId()) &&
+                isNotBlank(clusterProfileProperties.getAwsSecretAccessKey())) {
             AwsBasicCredentials awsCredentials = AwsBasicCredentials.create(clusterProfileProperties.getAwsAccessKeyId(),
                     clusterProfileProperties.getAwsSecretAccessKey());
             return StaticCredentialsProvider.create(awsCredentials);
         }
         else {
             DefaultCredentialsProvider.Builder builder = DefaultCredentialsProvider.builder();
-            if (isNotNullOrBlank(clusterProfileProperties.getAwsProfile())) {
+            if (isNotBlank(clusterProfileProperties.getAwsProfile())) {
                 builder.profileName(clusterProfileProperties.getAwsProfile());
             }
             return builder.build();
@@ -244,10 +245,19 @@ public class Ec2Instance {
     }
 
     protected static Ec2Client createEc2Client(ClusterProfileProperties clusterProfileProperties) {
-        return Ec2Client.builder()
+        Ec2ClientBuilder builder = Ec2Client.builder()
                 .region(clusterProfileProperties.getAwsRegion())
-                .credentialsProvider(getCredentialsProvider(clusterProfileProperties))
-                .build();
+                .credentialsProvider(getCredentialsProvider(clusterProfileProperties));
+
+        if (isNotBlank(clusterProfileProperties.getAwsEndpointUrl())) {
+            try {
+                URI endpointURI = new URL(clusterProfileProperties.getAwsEndpointUrl()).toURI();
+                builder.endpointOverride(endpointURI);
+            } catch(URISyntaxException | MalformedURLException e) {
+                LOG.error("Could not build URI from vpc endpoint url: " + clusterProfileProperties.getAwsEndpointUrl(), e);
+            }
+        }
+        return builder.build();
     }
 
     @Override
