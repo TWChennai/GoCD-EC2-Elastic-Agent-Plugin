@@ -60,6 +60,13 @@
     </div>
 
     <div class="columns medium-4 large-3">
+        <label ng-class="{'is-invalid-label': GOINPUTNAME[go_agent_work_dir].$error.server}">Go-Agent Working Directory:</label>
+        <input ng-class="{'is-invalid-input': GOINPUTNAME[go_agent_work_dir].$error.server}" type="text" ng-model="go_agent_work_dir" ng-required="false"/>
+        <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[go_agent_work_dir].$error.server}"
+              ng-show="GOINPUTNAME[go_agent_work_dir].$error.server">{{GOINPUTNAME[go_agent_work_dir].$error.server}}</span>
+    </div>
+
+    <div class="columns medium-4 large-3">
         <label ng-class="{'is-invalid-label': GOINPUTNAME[ec2_user_data].$error.server}">User data:</label>
         <textarea ng-class="{'is-invalid-input': GOINPUTNAME[ec2_user_data].$error.server}" type="text" rows="3" ng-model="ec2_user_data" ng-required="false"/>
         <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[ec2_user_data].$error.server}"

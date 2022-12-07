@@ -31,6 +31,7 @@ import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.Ec2ClientBuilder;
 import software.amazon.awssdk.services.ec2.model.*;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -72,20 +73,23 @@ public class Ec2Instance {
     public static Ec2Instance create(CreateAgentRequest request, ClusterProfileProperties clusterProfileProperties, ConsoleLogAppender consoleLogAppender) {
 
         LOG.debug("Creating new instance for " + request.jobIdentifier().getRepresentation());
-
         Ec2Client ec2 = createEc2Client(clusterProfileProperties);
+
+        String agentWorkDir = request.properties().get("go_agent_work_dir") != null ?
+                request.properties().get("go_agent_work_dir") :
+                "/var/lib/go-agent";
+        String configDir = new File(agentWorkDir, "config").getAbsolutePath();
+        String autoRegisterPropertiesFile = new File(configDir, "autoregister.properties").getAbsolutePath();
 
         String userdata = "#!/bin/bash\n" +
                 "sed -ri \"s,http[s]?://localhost:[0-9]+/go," + clusterProfileProperties.getGoServerUrl() + ",g\" /usr/share/go-agent/wrapper-config/wrapper-properties.conf\n" +
-                "echo \"wrapper.app.parameter.102=-sslVerificationMode\" >> /usr/share/go-agent/wrapper-config/wrapper-properties.conf\n" +
-                "echo \"wrapper.app.parameter.103=NONE\" >> /usr/share/go-agent/wrapper-config/wrapper-properties.conf\n" +
-                "mkdir -p /var/lib/go-agent/config\n" +
-                "echo \"agent.auto.register.key=" + request.autoRegisterKey() + "\" > /var/lib/go-agent/config/autoregister.properties\n" +
-                "echo \"agent.auto.register.hostname=EA_$(ec2-metadata --instance-id | cut -d \" \" -f 2)\" >> /var/lib/go-agent/config/autoregister.properties\n" +
-                "echo \"agent.auto.register.elasticAgent.agentId=$(ec2-metadata --instance-id | cut -d \" \" -f 2)\" >> /var/lib/go-agent/config/autoregister.properties\n" +
-                "echo \"agent.auto.register.elasticAgent.pluginId=" + Constants.PLUGIN_ID + "\" >> /var/lib/go-agent/config/autoregister.properties\n" +
+                "mkdir -p " + configDir + "\n" +
+                "echo \"agent.auto.register.key=" + request.autoRegisterKey() + "\" > " + autoRegisterPropertiesFile + "\n" +
+                "echo \"agent.auto.register.hostname=EA_$(ec2-metadata --instance-id | cut -d \" \" -f 2)\" >> " + autoRegisterPropertiesFile + "\n" +
+                "echo \"agent.auto.register.elasticAgent.agentId=$(ec2-metadata --instance-id | cut -d \" \" -f 2)\" >> " + autoRegisterPropertiesFile + "\n" +
+                "echo \"agent.auto.register.elasticAgent.pluginId=" + Constants.PLUGIN_ID + "\" >> " + autoRegisterPropertiesFile + "\n" +
                 "chown -R go:go /var/log/go-agent/\n" +
-                "chown -R go:go /var/lib/go-agent/\n" +
+                "chown -R go:go" + agentWorkDir + "\n" +
                 "chown -R go:go /usr/share/go-agent/\n";
         if (request.environment() != null) {
             userdata += "echo \"agent.auto.register.environments=" + request.environment() + "\" >> /var/lib/go-agent/config/autoregister.properties\n";
@@ -168,7 +172,7 @@ public class Ec2Instance {
                         .build();
 
                 String iamProfileName = (request.properties().get("ec2_instance_profile") == null) ? "" : request.properties().get("ec2_instance_profile");
-                
+
                 RunInstancesRequest runInstancesRequest = RunInstancesRequest.builder()
                         .imageId(request.properties().get("ec2_ami"))
                         .instanceType(InstanceType.fromValue(request.properties().get("ec2_instance_type")))
@@ -234,8 +238,7 @@ public class Ec2Instance {
             AwsBasicCredentials awsCredentials = AwsBasicCredentials.create(clusterProfileProperties.getAwsAccessKeyId(),
                     clusterProfileProperties.getAwsSecretAccessKey());
             return StaticCredentialsProvider.create(awsCredentials);
-        }
-        else {
+        } else {
             DefaultCredentialsProvider.Builder builder = DefaultCredentialsProvider.builder();
             if (isNotBlank(clusterProfileProperties.getAwsProfile())) {
                 builder.profileName(clusterProfileProperties.getAwsProfile());
@@ -253,7 +256,7 @@ public class Ec2Instance {
             try {
                 URI endpointURI = new URL(clusterProfileProperties.getAwsEndpointUrl()).toURI();
                 builder.endpointOverride(endpointURI);
-            } catch(URISyntaxException | MalformedURLException e) {
+            } catch (URISyntaxException | MalformedURLException e) {
                 LOG.error("Could not build URI from vpc endpoint url: " + clusterProfileProperties.getAwsEndpointUrl(), e);
             }
         }
