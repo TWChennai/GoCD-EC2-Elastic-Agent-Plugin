@@ -77,7 +77,7 @@ public class Ec2Instance {
 
         String agentWorkDir = request.properties().get("go_agent_work_dir") != null ?
                 request.properties().get("go_agent_work_dir") :
-                "/var/lib/go-agent";
+                "/var/lib/go-agent/";
         String configDir = new File(agentWorkDir, "config").getAbsolutePath();
         String autoRegisterPropertiesFile = new File(configDir, "autoregister.properties").getAbsolutePath();
 
@@ -89,10 +89,10 @@ public class Ec2Instance {
                 "echo \"agent.auto.register.elasticAgent.agentId=$(ec2-metadata --instance-id | cut -d \" \" -f 2)\" >> " + autoRegisterPropertiesFile + "\n" +
                 "echo \"agent.auto.register.elasticAgent.pluginId=" + Constants.PLUGIN_ID + "\" >> " + autoRegisterPropertiesFile + "\n" +
                 "chown -R go:go /var/log/go-agent/\n" +
-                "chown -R go:go" + agentWorkDir + "\n" +
+                "chown -R go:go " + agentWorkDir + "\n" +
                 "chown -R go:go /usr/share/go-agent/\n";
         if (request.environment() != null) {
-            userdata += "echo \"agent.auto.register.environments=" + request.environment() + "\" >> /var/lib/go-agent/config/autoregister.properties\n";
+            userdata += "echo \"agent.auto.register.environments=" + request.environment() + "\" >> " + autoRegisterPropertiesFile + "\n";
         }
 
         if (request.properties().get("ec2_user_data") != null) {
